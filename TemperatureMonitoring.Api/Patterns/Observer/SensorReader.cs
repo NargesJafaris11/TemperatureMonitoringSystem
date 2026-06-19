@@ -3,6 +3,7 @@ namespace TemperatureMonitoring.Api.Patterns.Observer;
 public class SensorReader : ISensorSubject
 {
     private readonly List<ISensorObserver> _observers = new();
+    public List<ISensorObserver> Observers => _observers;
 
     public void Attach(ISensorObserver observer)
     {
