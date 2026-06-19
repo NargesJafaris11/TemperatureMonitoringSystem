@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using TemperatureMonitoring.Api.Models;
 using TemperatureMonitoring.Api.Patterns.Singleton;
 using TemperatureMonitoring.Api.Patterns.State;
@@ -22,12 +23,14 @@ public class SensorProcessorObserver : ISensorObserver
 
         var temperature = 0.0;
         var humidity = 0.0;
+        var serialNumber = ExtractSerialNumber(line);
+        var manufacturer = ExtractManufacturer(line);
 
         Sensor sensor = new()
         {
             Id = Random.Shared.Next(),
-            SerialNumber = "Unknown",
-            Name = "Sensor",
+            SerialNumber = serialNumber,
+            Name = $"{manufacturer} Sensor",
             State = "Unknown",
             LastMeasurementTimestamp = DateTime.UtcNow
         };
@@ -72,5 +75,17 @@ public class SensorProcessorObserver : ISensorObserver
         sensor.State = context.GetCurrentState();
 
         SensorManager.Instance.AddSensor(sensor);
+    }
+    
+    private string ExtractSerialNumber(string line)
+    {
+        var match = Regex.Match(line, @"(?:serial|serialnumber):(\d+)");
+        return match.Success ? match.Groups[1].Value : "Unknown";
+    }
+
+    private string ExtractManufacturer(string line)
+    {
+        var match = Regex.Match(line, @"(?:manu|manufac):([a-zA-Z0-9_]+)");
+        return match.Success ? match.Groups[1].Value : "Unknown";
     }
 }
