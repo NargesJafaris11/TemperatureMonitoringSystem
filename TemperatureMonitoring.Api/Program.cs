@@ -1,7 +1,10 @@
+using TemperatureMonitoring.Api.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -36,5 +39,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.MapControllers();
+app.MapHub<SensorHub>("/sensorHub");
 
 app.Run();
