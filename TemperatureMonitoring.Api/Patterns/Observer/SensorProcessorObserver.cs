@@ -73,6 +73,44 @@ public class SensorProcessorObserver : ISensorObserver
             context.SetState(new OnlineState());
 
         sensor.State = context.GetCurrentState();
+        if (!sensor.LastMeasurements.Any(m => m.Type == "Temperature"))
+        {
+            sensor.LastMeasurements.Add(new Measurement
+            {
+                Type = "Temperature",
+                Value = 0,
+                Unit = "Celsius",
+                Timestamp = DateTime.UtcNow
+            });
+        }
+
+        if (!sensor.LastMeasurements.Any(m => m.Type == "Humidity"))
+        {
+            sensor.LastMeasurements.Add(new Measurement
+            {
+                Type = "Humidity",
+                Value = 0,
+                Unit = "Percent",
+                Timestamp = DateTime.UtcNow
+            });
+        }
+
+        if (!sensor.LastMeasurements.Any(m => m.Type == "Battery"))
+        {
+            sensor.LastMeasurements.Add(new Measurement
+            {
+                Type = "Battery",
+                Value = 100,
+                Unit = "Percent",
+                Timestamp = DateTime.UtcNow
+            });
+        }
+
+        sensor.LastMeasurements = sensor.LastMeasurements
+            .OrderBy(m => m.Type == "Temperature" ? 0 :
+                m.Type == "Humidity" ? 1 :
+                m.Type == "Battery" ? 2 : 3)
+            .ToList();
 
         SensorManager.Instance.AddSensor(sensor);
     }
