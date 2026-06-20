@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.SignalR;
+using TemperatureMonitoring.Api.Hubs;
 using TemperatureMonitoring.Api.Models;
 using TemperatureMonitoring.Api.Patterns.Singleton;
 using TemperatureMonitoring.Api.Patterns.State;
@@ -8,11 +10,18 @@ namespace TemperatureMonitoring.Api.Patterns.Observer;
 
 public class SensorProcessorObserver : ISensorObserver
 {
+    private readonly IHubContext<SensorHub> _hubContext;
+
     private readonly List<ISensorParserStrategy> _strategies =
     [
         new TempSensorParser(),
         new HumiditySensorParser()
     ];
+
+    public SensorProcessorObserver(IHubContext<SensorHub> hubContext)
+    {
+        _hubContext = hubContext;
+    }
 
     public void Update(string line)
     {
@@ -22,7 +31,6 @@ public class SensorProcessorObserver : ISensorObserver
             return;
 
         var temperature = 0.0;
-        var humidity = 0.0;
         var serialNumber = ExtractSerialNumber(line);
         var manufacturer = ExtractManufacturer(line);
 
@@ -50,12 +58,10 @@ public class SensorProcessorObserver : ISensorObserver
 
         if (line.Contains("hum:"))
         {
-            humidity = strategy.ParseHumidity(line);
-
             sensor.LastMeasurements.Add(new Measurement
             {
                 Type = "Humidity",
-                Value = humidity,
+                Value = strategy.ParseHumidity(line),
                 Unit = "Percent",
                 Timestamp = DateTime.UtcNow
             });
@@ -73,6 +79,7 @@ public class SensorProcessorObserver : ISensorObserver
             context.SetState(new OnlineState());
 
         sensor.State = context.GetCurrentState();
+
         if (!sensor.LastMeasurements.Any(m => m.Type == "Temperature"))
         {
             sensor.LastMeasurements.Add(new Measurement
@@ -113,8 +120,10 @@ public class SensorProcessorObserver : ISensorObserver
             .ToList();
 
         SensorManager.Instance.AddSensor(sensor);
+
+        _hubContext.Clients.All.SendAsync("ReceiveSensorData", sensor);
     }
-    
+
     private string ExtractSerialNumber(string line)
     {
         var match = Regex.Match(line, @"(?:serial|serialnumber):(\d+)");

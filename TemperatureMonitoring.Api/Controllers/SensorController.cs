@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using TemperatureMonitoring.Api.Hubs;
 using TemperatureMonitoring.Api.Patterns.Facade;
 
 namespace TemperatureMonitoring.Api.Controllers;
@@ -7,10 +9,17 @@ namespace TemperatureMonitoring.Api.Controllers;
 [Route("sensor")]
 public class SensorController : ControllerBase
 {
+    private readonly IHubContext<SensorHub> _hubContext;
+
+    public SensorController(IHubContext<SensorHub> hubContext)
+    {
+        _hubContext = hubContext;
+    }
+
     [HttpGet]
     public IActionResult Get()
     {
-        var facade = new SensorFacade();
+        var facade = new SensorFacade(_hubContext);
         var sensors = facade.LoadSensors();
 
         var response = new
