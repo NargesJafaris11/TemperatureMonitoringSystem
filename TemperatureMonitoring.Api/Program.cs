@@ -11,7 +11,10 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("https://climate.dops.tech")
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "https://climate.dops.tech"
+            )
             .AllowCredentials()
             .AllowAnyHeader()
             .AllowAnyMethod();
