@@ -4,7 +4,7 @@ using TemperatureMonitoring.Api.Patterns.Facade;
 namespace TemperatureMonitoring.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("sensor")]
 public class SensorController : ControllerBase
 {
     [HttpGet]
