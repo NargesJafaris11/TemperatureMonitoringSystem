@@ -2,7 +2,7 @@
 
 ## Description
 
-The Temperature Monitoring System is a web application for monitoring sensor data in real time. The application reads sensor measurements from a data source, processes them, and displays the information in a web dashboard. Users can view temperature, humidity, and battery values and receive live updates through SignalR.
+The Temperature Monitoring System is a web application for monitoring sensor data in real time. The application reads sensor measurements from a data source, processes them, and displays the information in a web dashboard. Users can view temperature, humidity and battery values and receive live updates through SignalR.
 
 ## Features
 
@@ -13,6 +13,7 @@ The Temperature Monitoring System is a web application for monitoring sensor dat
 * View battery percentage
 * Real-time updates using SignalR
 * REST API endpoint for sensor data
+* Unit tests for the implemented design patterns
 
 ## Technologies
 
@@ -21,6 +22,7 @@ The Temperature Monitoring System is a web application for monitoring sensor dat
 * C#
 * ASP.NET Core
 * SignalR
+* xUnit
 
 ### Frontend
 
@@ -38,36 +40,6 @@ The following design patterns are used:
 * State
 * Facade
 
-## API
-
-### Get sensors
-
-```
-GET /sensor
-```
-
-Example:
-
-```
-https://localhost:8888/sensor
-```
-
-## SignalR
-
-SignalR is used for live updates.
-
-Hub endpoint:
-
-```
-https://localhost:8888/sensorHub
-```
-
-Clients receive updates through:
-
-```
-ReceiveSensorData
-```
-
 ## Project Structure
 
 ### Backend
@@ -77,11 +49,11 @@ ReceiveSensorData
 * Services
 * Patterns
 
-    * Singleton
-    * Observer
-    * Strategy
-    * State
-    * Facade
+  * Singleton
+  * Observer
+  * Strategy
+  * State
+  * Facade
 * Hubs
 
 ### Frontend
@@ -108,7 +80,13 @@ Clone the repository:
 git clone <repository-url>
 ```
 
-Restore backend dependencies:
+Navigate to the project folder:
+
+```bash
+cd TemperatureMonitoringSystem
+```
+
+Restore dependencies:
 
 ```bash
 dotnet restore
@@ -120,20 +98,38 @@ Install frontend dependencies:
 yarn install
 ```
 
-## Running the application
+## Running the Application
 
 ### Backend
 
-Navigate to the backend project and run:
+Navigate to the API project:
+
+```bash
+cd TemperatureMonitoring.Api
+```
+
+Run the backend:
 
 ```bash
 dotnet run
 ```
 
-Backend runs on:
+The backend will start on:
 
-```
+```text
 https://localhost:8888
+```
+
+Swagger is available at:
+
+```text
+https://localhost:8888/swagger
+```
+
+Sensor API endpoint:
+
+```text
+https://localhost:8888/sensor
 ```
 
 ### Frontend
@@ -144,10 +140,48 @@ Navigate to the frontend project and run:
 yarn dev
 ```
 
-Frontend runs on:
+The frontend runs on:
 
-```
+```text
 http://localhost:5173
+```
+
+## API
+
+### Get Sensors
+
+```http
+GET /sensor
+```
+
+Example:
+
+```text
+https://localhost:8888/sensor
+```
+
+## SignalR
+
+SignalR is used for real-time communication.
+
+Hub endpoint:
+
+```text
+https://localhost:8888/sensorHub
+```
+
+Clients receive updates through:
+
+```text
+ReceiveSensorData
+```
+
+## Running Tests
+
+Execute the unit tests using:
+
+```bash
+dotnet test
 ```
 
 ## Documentation
